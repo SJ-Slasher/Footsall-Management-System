@@ -95,7 +95,7 @@ async function loadDashboardData() {
         const availability = await availabilityRes.json();
 
         document.getElementById('stat-total-bookings').textContent = stats.totalBookings || 0;
-        document.getElementById('stat-total-revenue').textContent = `$${(stats.totalRevenue || 0).toFixed(0)}`;
+        document.getElementById('stat-total-revenue').textContent = `Rs ${(stats.totalRevenue || 0).toFixed(0)}`;
         document.getElementById('stat-total-users').textContent = stats.totalUsers || 0;
         document.getElementById('stat-active-courts').textContent = stats.activeCourts || 0;
         
@@ -106,7 +106,7 @@ async function loadDashboardData() {
             document.getElementById('stat-pending-bookings').textContent = stats.pendingBookings || 0;
         }
         if (document.getElementById('stat-month-revenue')) {
-            document.getElementById('stat-month-revenue').textContent = `$${(stats.monthRevenue || 0).toFixed(0)}`;
+            document.getElementById('stat-month-revenue').textContent = `Rs ${(stats.monthRevenue || 0).toFixed(0)}`;
         }
 
         renderRecentBookings(bookings.bookings?.slice(0, 5) || []);

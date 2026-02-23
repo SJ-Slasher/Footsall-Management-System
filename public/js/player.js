@@ -239,7 +239,7 @@ function renderCourts() {
                     </div>
                     <div class="court-footer">
                         <div class="court-price">
-                            $${parseFloat(court.price_per_hour).toFixed(0)}<span>/hour</span>
+                            Rs ${parseFloat(court.price_per_hour).toFixed(0)}<span>/hour</span>
                         </div>
                         <div class="court-select-indicator">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
@@ -384,8 +384,8 @@ function updateBookingSummary() {
     document.getElementById('summary-date').textContent = formatDate(selectedDate);
     document.getElementById('summary-slots').textContent = `${slotsCount} slot${slotsCount > 1 ? 's' : ''}`;
     document.getElementById('summary-duration').textContent = `${slotsCount} hour${slotsCount > 1 ? 's' : ''}`;
-    document.getElementById('summary-price-per-hour').textContent = `$${parseFloat(selectedCourt.price_per_hour).toFixed(2)}`;
-    document.getElementById('summary-total').textContent = `$${totalAmount.toFixed(2)}`;
+    document.getElementById('summary-price-per-hour').textContent = `Rs ${parseFloat(selectedCourt.price_per_hour).toFixed(2)}`;
+    document.getElementById('summary-total').textContent = `Rs ${totalAmount.toFixed(2)}`;
 }
 
 async function confirmBooking() {
@@ -508,7 +508,7 @@ function renderBookings(bookings) {
                 <td>${booking.court_name}</td>
                 <td>${formatDate(booking.booking_date)}</td>
                 <td><div class="time-slots-display">${timeSlotsDisplay || '-'}</div></td>
-                <td class="font-semibold">$${parseFloat(booking.total_amount).toFixed(2)}</td>
+                <td class="font-semibold">Rs ${parseFloat(booking.total_amount).toFixed(2)}</td>
                 <td><span class="badge badge-${booking.status}">${capitalizeFirst(booking.status)}</span></td>
                 <td>
                     ${booking.status === 'pending' || booking.status === 'confirmed' ? 
