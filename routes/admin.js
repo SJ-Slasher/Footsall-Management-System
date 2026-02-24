@@ -50,6 +50,7 @@ router.get('/stats', requireAdmin, async (req, res) => {
             "SELECT COALESCE(SUM(total_amount), 0) as total FROM bookings WHERE MONTH(booking_date) = MONTH(CURDATE()) AND YEAR(booking_date) = YEAR(CURDATE()) AND status IN ('paid', 'completed')"
         );
 
+        // convert mysql decimal strings to numbers before returning
         res.json({
             totalBookings: totalBookings[0].count,
             pendingBookings: pendingBookings[0].count,
@@ -58,11 +59,11 @@ router.get('/stats', requireAdmin, async (req, res) => {
             completedBookings: completedBookings[0].count,
             totalUsers: totalUsers[0].count,
             activeCourts: activeCourts[0].count,
-            totalRevenue: totalRevenue[0].total,
+            totalRevenue: parseFloat(totalRevenue[0].total) || 0,
             todayBookings: todayBookings[0].count,
-            todayEarnings: todayEarnings[0].total,
+            todayEarnings: parseFloat(todayEarnings[0].total) || 0,
             monthBookings: monthBookings[0].count,
-            monthRevenue: monthRevenue[0].total
+            monthRevenue: parseFloat(monthRevenue[0].total) || 0
         });
     } catch (error) {
         console.error('Get stats error:', error);

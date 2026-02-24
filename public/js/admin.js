@@ -95,7 +95,11 @@ async function loadDashboardData() {
         const availability = await availabilityRes.json();
 
         document.getElementById('stat-total-bookings').textContent = stats.totalBookings || 0;
-        document.getElementById('stat-total-revenue').textContent = `Rs ${(stats.totalRevenue || 0).toFixed(0)}`;
+
+        // ensure numeric values for revenue so toFixed() is safe
+        const totalRevenueNum = parseFloat(stats.totalRevenue) || 0;
+        document.getElementById('stat-total-revenue').textContent = `Rs ${totalRevenueNum.toFixed(0)}`;
+
         document.getElementById('stat-total-users').textContent = stats.totalUsers || 0;
         document.getElementById('stat-active-courts').textContent = stats.activeCourts || 0;
         
@@ -106,7 +110,8 @@ async function loadDashboardData() {
             document.getElementById('stat-pending-bookings').textContent = stats.pendingBookings || 0;
         }
         if (document.getElementById('stat-month-revenue')) {
-            document.getElementById('stat-month-revenue').textContent = `Rs ${(stats.monthRevenue || 0).toFixed(0)}`;
+            const monthRevenueNum = parseFloat(stats.monthRevenue) || 0;
+            document.getElementById('stat-month-revenue').textContent = `Rs ${monthRevenueNum.toFixed(0)}`;
         }
 
         renderRecentBookings(bookings.bookings?.slice(0, 5) || []);
@@ -248,7 +253,7 @@ function renderAllBookings(bookings) {
                 <td>${booking.court_name}</td>
                 <td>${formatDate(booking.booking_date)}</td>
                 <td><div class="time-slots-display">${timeSlotsDisplay || '-'}</div></td>
-                <td class="font-semibold">$${parseFloat(booking.total_amount).toFixed(2)}</td>
+                <td class="font-semibold">Rs ${parseFloat(booking.total_amount).toFixed(2)}</td>
                 <td><span class="badge badge-${booking.status}">${capitalizeFirst(booking.status)}</span></td>
                 <td>
                     <div class="actions">
@@ -338,7 +343,7 @@ function renderAdminCourts() {
                 <p class="court-description">${court.description || 'No description provided.'}</p>
                 <div class="court-footer">
                     <div class="court-price">
-                        $${parseFloat(court.price_per_hour).toFixed(0)}<span>/hour</span>
+                        Rs ${parseFloat(court.price_per_hour).toFixed(0)}<span>/hour</span>
                     </div>
                     <div class="actions">
                         <button class="btn btn-secondary btn-sm" onclick="openCourtModal(${court.id})">Edit</button>
