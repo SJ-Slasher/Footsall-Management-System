@@ -299,15 +299,23 @@ function renderTimeSlots(slots) {
         return;
     }
 
+    // determine if today and current time for additional filtering
+    const todayStr = new Date().toISOString().split('T')[0];
+    const nowTime = new Date().toTimeString().split(' ')[0]; // HH:MM:SS
+
     container.innerHTML = slots.map(slot => {
         const isSelected = selectedTimeSlots.some(s => s.id === slot.id);
+        const isPast = selectedDate === todayStr && slot.start_time <= nowTime;
+        const unavailable = !slot.is_available || isPast;
+        const statusText = !slot.is_available ? 'Booked' : (isPast ? 'Past' : 'Available');
+
         return `
-            <div class="time-slot ${slot.is_available ? '' : 'unavailable'} ${isSelected ? 'selected' : ''}" 
+            <div class="time-slot ${unavailable ? 'unavailable' : ''} ${isSelected ? 'selected' : ''}" 
                  data-id="${slot.id}" 
                  data-start="${slot.start_time}" 
                  data-end="${slot.end_time}">
                 <div class="time-slot-time">${formatTime(slot.start_time)} - ${formatTime(slot.end_time)}</div>
-                <div class="time-slot-status">${slot.is_available ? 'Available' : 'Booked'}</div>
+                <div class="time-slot-status">${statusText}</div>
             </div>
         `;
     }).join('');

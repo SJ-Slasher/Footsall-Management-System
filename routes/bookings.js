@@ -46,10 +46,24 @@ router.get('/available', async (req, res) => {
 
         const bookedSlotIds = bookedSlots.map(b => b.time_slot_id);
 
-        const availableSlots = allSlots.map(slot => ({
+        // Mark availability based on existing bookings
+        let availableSlots = allSlots.map(slot => ({
             ...slot,
             is_available: !bookedSlotIds.includes(slot.id)
         }));
+
+        // If requesting today's slots, hide any time slots that start in the past
+        const today = new Date().toISOString().split('T')[0];
+        if (date === today) {
+            const now = new Date();
+            const currentTime = now.toTimeString().split(' ')[0]; // HH:MM:SS
+            availableSlots = availableSlots.map(slot => {
+                if (slot.start_time <= currentTime) {
+                    return { ...slot, is_available: false };
+                }
+                return slot;
+            });
+        }
 
         res.json({ slots: availableSlots });
     } catch (error) {
@@ -68,6 +82,25 @@ router.post('/', requireAuth, async (req, res) => {
 
         if (!time_slot_ids || time_slot_ids.length === 0) {
             return res.status(400).json({ error: 'Please select at least one time slot' });
+        }
+
+        // Prevent booking on past dates or times
+        const todayStr = new Date().toISOString().split('T')[0];
+        if (booking_date < todayStr) {
+            return res.status(400).json({ error: 'Cannot book on a past date' });
+        }
+        if (booking_date === todayStr) {
+            const now = new Date();
+            const currentTime = now.toTimeString().split(' ')[0];
+            // fetch slot times for the requested ids
+            const [slots] = await connection.query(
+                'SELECT id, start_time FROM time_slots WHERE id IN (?)',
+                [time_slot_ids]
+            );
+            const hasPast = slots.some(s => s.start_time <= currentTime);
+            if (hasPast) {
+                return res.status(400).json({ error: 'Cannot book time slots that have already started' });
+            }
         }
 
         // Get court price
